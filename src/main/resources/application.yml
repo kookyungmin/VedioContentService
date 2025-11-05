@@ -7,10 +7,12 @@ spring:
     username: local
     password: local
   jpa:
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
-        ddl-auto: update
         dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
     open-in-view: false
   data:
     redis:
