@@ -1,0 +1,26 @@
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MYSQL
+    username: sa
+    password:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6380
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.4.18
+logging:
+  level:
+    root: INFO
+    redis.clients: TRACE
