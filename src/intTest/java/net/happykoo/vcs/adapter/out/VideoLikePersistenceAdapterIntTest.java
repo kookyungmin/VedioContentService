@@ -22,7 +22,7 @@ public class VideoLikePersistenceAdapterIntTest {
     @Nested
     @DisplayName("videoId 로 생성된 VideoLike 키로 userId 를 set에 추가")
     class AddLikeVideo {
-        final String videoId = "videoId";
+        final String videoId = "videoId1";
         final String userId = "userId";
 
         @Test
@@ -51,11 +51,12 @@ public class VideoLikePersistenceAdapterIntTest {
     @Nested
     @DisplayName("videoId 로 생성된 VideoLike 키로 userId 를 set에서 제거")
     class RemoveLikeVideo {
+        final String videoId = "videoId2";
+        final String userId = "userId";
+
         @Test
         @DisplayName("remove 하면 userId 가 제거된다")
         void test1() {
-            final String videoId = "videoId";
-            final String userId = "userId";
             videoLikePersistenceAdapter.addVideoLike(videoId, userId);
 
             then(redisTemplate.opsForSet().isMember(getVideoLikeKey(videoId), userId))
@@ -71,15 +72,18 @@ public class VideoLikePersistenceAdapterIntTest {
     @Nested
     @DisplayName("videoId 로 생성된 VideoLike 키로 user 수 count")
     class CountLikeVideo {
+        final String videoId = "videoId3";
+        final String userId = "userId";
+
         @Test
         @DisplayName("add 한 user 수 만큼 count 값 반환")
         void test1() {
             final int loopCount = 10;
             for (int i = 0; i < loopCount; i++) {
-                redisTemplate.opsForSet().add(getVideoLikeKey("videoId"), "userId" + i);
+                redisTemplate.opsForSet().add(getVideoLikeKey(videoId), userId + i);
             }
 
-            var result = videoLikePersistenceAdapter.getVideoLikeCount("videoId");
+            var result = videoLikePersistenceAdapter.getVideoLikeCount(videoId);
 
             then(result).isEqualTo(loopCount);
         }
