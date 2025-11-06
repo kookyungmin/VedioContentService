@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -33,9 +34,17 @@ public class RedisConfig {
     }
 
     @Bean
+    @Primary
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultCacheConfiguration())
+                .build();
+    }
+
+    @Bean
+    public RedisCacheManager redisTtl10mCacheManager(RedisConnectionFactory redisConnectionFactory) {
+        return RedisCacheManager.builder(redisConnectionFactory)
+                .cacheDefaults(ttl10mCacheConfiguration())
                 .build();
     }
 
@@ -57,6 +66,13 @@ public class RedisConfig {
         return RedisCacheConfiguration
                 .defaultCacheConfig()
                 .entryTtl(Duration.ofHours(1L))
+                .disableCachingNullValues();
+    }
+
+    private RedisCacheConfiguration ttl10mCacheConfiguration() {
+        return RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(10L))
                 .disableCachingNullValues();
     }
 
