@@ -10,4 +10,7 @@ public class RedisKeyGenerator {
     public static String getUserSessionKey(String authKey) {
         return USER_SESSION + SEPARATOR + authKey;
     }
+    public static String getVideoLikeKey(String videoId) {
+        return VIDEO_LIKE + SEPARATOR +  videoId;
+    }
 }

@@ -1,10 +1,7 @@
 package net.happykoo.vcs.application;
 
 import net.happykoo.vcs.adapter.in.api.dto.VideoRequestFixtures;
-import net.happykoo.vcs.application.port.out.LoadChannelPort;
-import net.happykoo.vcs.application.port.out.LoadVideoPort;
-import net.happykoo.vcs.application.port.out.SaveChannelPort;
-import net.happykoo.vcs.application.port.out.SaveVideoPort;
+import net.happykoo.vcs.application.port.out.*;
 import net.happykoo.vcs.domain.channel.ChannelFixtures;
 import net.happykoo.vcs.domain.video.VideoFixtures;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +24,13 @@ public class VideoServiceTest {
 
     private final LoadVideoPort loadVideoPort = mock(LoadVideoPort.class);
     private final SaveVideoPort saveVideoPort = mock(SaveVideoPort.class);
+    private final VideoLikePort videoLikePort = mock(VideoLikePort.class);
     private final LoadChannelPort loadChannelPort = mock(LoadChannelPort.class);
     private final SaveChannelPort saveChannelPort = mock(SaveChannelPort.class);
 
     @BeforeEach
     void setUp() {
-        videoService = new VideoService(loadVideoPort, saveVideoPort, loadChannelPort, saveChannelPort);
+        videoService = new VideoService(loadVideoPort, saveVideoPort, videoLikePort, loadChannelPort, saveChannelPort);
     }
 
     @Test
@@ -62,6 +60,7 @@ public class VideoServiceTest {
                 .toList();
         given(loadVideoPort.loadVideoByChannel(any())).willReturn(list);
         given(loadVideoPort.getViewCount(any())).willReturn(100L, 150L, 200L);
+        given(videoLikePort.getVideoLikeCount(any())).willReturn(10L, 15L, 20L);
         // When
         var result = videoService.listVideos(channelId);
         // Then
@@ -70,7 +69,7 @@ public class VideoServiceTest {
             .extracting("channelId").containsOnly(channelId);
         then(result)
                 .extracting("viewCount", "likeCount")
-                .contains(tuple(100L, 0L), tuple(150L, 0L), tuple(200L, 0L));
+                .contains(tuple(100L, 10L), tuple(150L, 15L), tuple(200L, 20L));
     }
 
     @Test

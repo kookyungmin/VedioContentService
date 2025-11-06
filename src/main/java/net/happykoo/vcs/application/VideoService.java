@@ -3,10 +3,7 @@ package net.happykoo.vcs.application;
 import lombok.RequiredArgsConstructor;
 import net.happykoo.vcs.adapter.in.api.dto.VideoRequest;
 import net.happykoo.vcs.application.port.in.VideoUseCase;
-import net.happykoo.vcs.application.port.out.LoadChannelPort;
-import net.happykoo.vcs.application.port.out.LoadVideoPort;
-import net.happykoo.vcs.application.port.out.SaveChannelPort;
-import net.happykoo.vcs.application.port.out.SaveVideoPort;
+import net.happykoo.vcs.application.port.out.*;
 import net.happykoo.vcs.domain.video.Video;
 import net.happykoo.vcs.exception.DomainNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,6 +17,7 @@ import java.util.UUID;
 public class VideoService implements VideoUseCase {
     private final LoadVideoPort loadVideoPort;
     private final SaveVideoPort saveVideoPort;
+    private final VideoLikePort videoLikePort;
     private final LoadChannelPort loadChannelPort;
     private final SaveChannelPort saveChannelPort;
 
@@ -27,8 +25,9 @@ public class VideoService implements VideoUseCase {
     public Video getVideo(String videoId) {
         var video = loadVideoPort.loadVideo(videoId);
         var viewCount = loadVideoPort.getViewCount(videoId);
+        var likeCount = videoLikePort.getVideoLikeCount(videoId);
 
-        video.bindCount(viewCount, 0);
+        video.bindCount(viewCount, likeCount);
 
         return video;
     }
@@ -39,7 +38,8 @@ public class VideoService implements VideoUseCase {
                 .stream()
                 .map(video -> {
                     var viewCount = loadVideoPort.getViewCount(video.getId());
-                    video.bindCount(viewCount, 0);
+                    var likeCount = videoLikePort.getVideoLikeCount(video.getId());
+                    video.bindCount(viewCount, likeCount);
                     return video;
                 })
                 .toList();
