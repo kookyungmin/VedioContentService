@@ -1,4 +1,4 @@
-package net.happykoo.vcs.application.port;
+package net.happykoo.vcs.application;
 
 import lombok.RequiredArgsConstructor;
 import net.happykoo.vcs.adapter.in.api.dto.ChannelRequest;

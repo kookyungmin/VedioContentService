@@ -1,7 +1,6 @@
 package net.happykoo.vcs.application;
 
 import net.happykoo.vcs.adapter.in.api.dto.VideoRequestFixtures;
-import net.happykoo.vcs.application.port.VideoService;
 import net.happykoo.vcs.application.port.out.LoadChannelPort;
 import net.happykoo.vcs.application.port.out.LoadVideoPort;
 import net.happykoo.vcs.application.port.out.SaveChannelPort;

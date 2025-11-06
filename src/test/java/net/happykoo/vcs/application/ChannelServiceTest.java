@@ -2,7 +2,6 @@ package net.happykoo.vcs.application;
 
 import net.happykoo.vcs.adapter.in.api.dto.ChannelRequest;
 import net.happykoo.vcs.adapter.in.api.dto.ChannelSnippetRequest;
-import net.happykoo.vcs.application.port.ChannelService;
 import net.happykoo.vcs.application.port.out.LoadChannelPort;
 import net.happykoo.vcs.application.port.out.SaveChannelPort;
 import net.happykoo.vcs.domain.channel.ChannelFixtures;

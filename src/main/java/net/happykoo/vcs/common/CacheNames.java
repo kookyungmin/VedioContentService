@@ -17,6 +17,9 @@ public class CacheNames {
     public static final String VIDEO_LIST = VIDEO + SEPARATOR + "list";
     public static final String VIDEO_VIEW_COUNT = VIDEO + SEPARATOR + "view-count";
 
+    public static final String USER = "user";
+    public static final String USER_SESSION = "user-session";
+
     public static List<String> getCacheNames() {
         List<String> cacheNames = new ArrayList<>();
 
