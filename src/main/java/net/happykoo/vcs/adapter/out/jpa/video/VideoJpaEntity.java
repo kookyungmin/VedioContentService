@@ -35,6 +35,7 @@ public class VideoJpaEntity {
 
     private LocalDateTime publishedAt;
 
+
     public static VideoJpaEntity from(Video video) {
         return new VideoJpaEntity(video.getId(),
                 video.getTitle(),

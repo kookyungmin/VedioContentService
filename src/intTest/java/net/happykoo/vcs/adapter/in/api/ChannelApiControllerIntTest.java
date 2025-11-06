@@ -1,8 +1,6 @@
-package net.happykoo.vcs.adapter.in;
+package net.happykoo.vcs.adapter.in.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.happykoo.vcs.adapter.in.api.dto.ChannelRequest;
-import net.happykoo.vcs.adapter.in.api.dto.ChannelSnippetRequest;
 import net.happykoo.vcs.adapter.out.jpa.channel.ChannelJpaRepository;
 import net.happykoo.vcs.config.TestRedisConfig;
 import net.happykoo.vcs.domain.channel.ChannelFixtures;
