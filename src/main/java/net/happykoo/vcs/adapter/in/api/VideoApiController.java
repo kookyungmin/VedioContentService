@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/video")
+@RequestMapping("/api/v1/videos")
 @RequiredArgsConstructor
 public class VideoApiController {
     private final VideoUseCase videoUseCase;
@@ -21,8 +21,8 @@ public class VideoApiController {
     }
 
     @GetMapping(params = "channelId")
-    public List<Video> listVideo(@RequestParam String channelId) {
-        return videoUseCase.listVideos(channelId);
+    public Response<List<Video>> listVideo(@RequestParam String channelId) {
+        return Response.ok(videoUseCase.listVideos(channelId));
     }
 
     @PostMapping

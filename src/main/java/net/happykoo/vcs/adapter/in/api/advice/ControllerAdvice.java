@@ -1,4 +1,4 @@
-package net.happykoo.vcs.adapter.in.api.advise;
+package net.happykoo.vcs.adapter.in.api.advice;
 
 import net.happykoo.vcs.adapter.in.api.dto.ErrorResponse;
 import net.happykoo.vcs.exception.BadRequestException;
