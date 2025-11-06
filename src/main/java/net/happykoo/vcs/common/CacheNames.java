@@ -13,6 +13,10 @@ public class CacheNames {
     public static final String SEPARATOR = ":";
     public static final String CHANNEL = "channel";
 
+    public static final String VIDEO = "video";
+    public static final String VIDEO_LIST = VIDEO + SEPARATOR + "list";
+    public static final String VIDEO_VIEW_COUNT = VIDEO + SEPARATOR + "view-count";
+
     public static List<String> getCacheNames() {
         List<String> cacheNames = new ArrayList<>();
 
