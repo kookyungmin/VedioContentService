@@ -17,12 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -61,6 +61,33 @@ public class ChannelApiControllerTest {
             );
 
         verify(channelUseCase).createChannel(channelRequestArgumentCaptor.capture());
+        var argValue= channelRequestArgumentCaptor.getValue();
+        assertThat(argValue.contentOwnerId()).isEqualTo(channelRequest.contentOwnerId());
+        assertThat(argValue.snippet())
+                .extracting(ChannelSnippetRequest::title, ChannelSnippetRequest::description, ChannelSnippetRequest::thumbnailUrl)
+                .containsExactly(channelRequest.snippet().title(), channelRequest.snippet().description(), channelRequest.snippet().thumbnailUrl());
+    }
+
+    @Test
+    @DisplayName("PUT /api/v1/channels 테스트")
+    public void test2() throws Exception {
+        var channelId = "happykoo";
+        //given
+        var channelRequest = new ChannelRequest(new ChannelSnippetRequest("marco-channel", "marco 채널", "https://happykoo.net/thumbnail.jpg"), "userId");
+        given(channelUseCase.updateChannel(any(), any())).willReturn(ChannelFixtures.stub(channelId));
+
+        //when
+        mockMvc
+                .perform(
+                        put("/api/v1/channels/{id}", channelId)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(channelRequest))
+                )
+                .andExpectAll(
+                        status().isOk()
+                );
+
+        verify(channelUseCase).updateChannel(eq(channelId), channelRequestArgumentCaptor.capture());
         var argValue= channelRequestArgumentCaptor.getValue();
         assertThat(argValue.contentOwnerId()).isEqualTo(channelRequest.contentOwnerId());
         assertThat(argValue.snippet())
