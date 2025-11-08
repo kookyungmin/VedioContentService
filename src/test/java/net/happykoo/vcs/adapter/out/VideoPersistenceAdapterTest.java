@@ -14,6 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.List;
@@ -32,11 +33,12 @@ public class VideoPersistenceAdapterTest {
 
     private final VideoJpaRepository videoJpaRepository = mock(VideoJpaRepository.class);
     private final RedisTemplate<String, Long> redisTemplate = mock(RedisTemplate.class, Mockito.RETURNS_DEEP_STUBS);
+    private final StringRedisTemplate stringRedisTemplate = mock(StringRedisTemplate.class, Mockito.RETURNS_DEEP_STUBS);
     private final ValueOperations<String, Long> valueOperations = mock(ValueOperations.class);
 
     @BeforeEach
     void setUp() {
-        videoPersistenceAdapter = new VideoPersistenceAdapter(videoJpaRepository, redisTemplate);
+        videoPersistenceAdapter = new VideoPersistenceAdapter(videoJpaRepository, redisTemplate, stringRedisTemplate);
         given(redisTemplate.opsForValue()).willReturn(valueOperations);
     }
 

@@ -8,6 +8,10 @@ public class RedisKeyGenerator {
         return VIDEO_VIEW_COUNT + SEPARATOR +  videoId;
     }
 
+    public static String getVideoViewCountSetKey() {
+        return VIDEO_VIEW_COUNT_SET;
+    }
+
     public static String getUserSessionKey(String authKey) {
         return USER_SESSION + SEPARATOR + authKey;
     }

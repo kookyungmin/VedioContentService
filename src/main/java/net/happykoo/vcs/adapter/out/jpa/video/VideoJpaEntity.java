@@ -35,6 +35,10 @@ public class VideoJpaEntity {
 
     private LocalDateTime publishedAt;
 
+    public void updateViewCount(long viewCount) {
+        this.viewCount = viewCount;
+    }
+
 
     public static VideoJpaEntity from(Video video) {
         return new VideoJpaEntity(video.getId(),

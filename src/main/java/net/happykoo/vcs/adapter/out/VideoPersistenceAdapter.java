@@ -5,26 +5,32 @@ import net.happykoo.vcs.adapter.out.jpa.video.VideoJpaEntity;
 import net.happykoo.vcs.adapter.out.jpa.video.VideoJpaRepository;
 import net.happykoo.vcs.application.port.out.LoadVideoPort;
 import net.happykoo.vcs.application.port.out.SaveVideoPort;
+import net.happykoo.vcs.common.RedisKeyGenerator;
 import net.happykoo.vcs.domain.video.Video;
 import net.happykoo.vcs.exception.DomainNotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static net.happykoo.vcs.common.CacheNames.VIDEO;
 import static net.happykoo.vcs.common.CacheNames.VIDEO_LIST;
 import static net.happykoo.vcs.common.RedisKeyGenerator.getVideoViewCountKey;
+import static net.happykoo.vcs.common.RedisKeyGenerator.getVideoViewCountSetKey;
 
 @Component
 @RequiredArgsConstructor
 public class VideoPersistenceAdapter implements LoadVideoPort, SaveVideoPort {
     private final VideoJpaRepository videoJpaRepository;
     private final RedisTemplate<String, Long> redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     @Cacheable(cacheManager = "redisCacheManager", cacheNames = VIDEO, key = "#videoId")
@@ -57,6 +63,7 @@ public class VideoPersistenceAdapter implements LoadVideoPort, SaveVideoPort {
     public void incrementViewCount(String videoId) {
         var key = getVideoViewCountKey(videoId);
         redisTemplate.opsForValue().increment(key);
+        stringRedisTemplate.opsForSet().add(getVideoViewCountSetKey(), videoId);
     }
 
     @Override
@@ -65,5 +72,26 @@ public class VideoPersistenceAdapter implements LoadVideoPort, SaveVideoPort {
         var viewCount = redisTemplate.opsForValue().get(key);
         return Optional.ofNullable(viewCount)
                 .orElse(0L);
+    }
+
+    @Override
+    public List<String> getAllVideoIdsWithViewCount() {
+        var members = stringRedisTemplate.opsForSet().members(getVideoViewCountSetKey());
+        return Optional.ofNullable(members)
+                .map(set -> set.stream().toList())
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public void syncViewCount(String videoId) {
+        videoJpaRepository.findById(videoId)
+            .ifPresent(videoJpaEntity -> {
+                var viewCount = redisTemplate.opsForValue().get(getVideoViewCountKey(videoId));
+                videoJpaEntity.updateViewCount(viewCount);
+                videoJpaRepository.save(videoJpaEntity);
+
+                stringRedisTemplate.opsForSet().remove(RedisKeyGenerator.getVideoViewCountSetKey(), videoId);
+            });
+
     }
 }

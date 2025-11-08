@@ -17,6 +17,7 @@ public class CacheNames {
     public static final String VIDEO_LIKE = "video-like";
     public static final String VIDEO_LIST = VIDEO + SEPARATOR + "list";
     public static final String VIDEO_VIEW_COUNT = VIDEO + SEPARATOR + "view-count";
+    public static final String VIDEO_VIEW_COUNT_SET = VIDEO + SEPARATOR + "view-count-set";
 
     public static final String USER = "user";
     public static final String USER_SESSION = "user-session";
