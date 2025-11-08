@@ -1,10 +1,7 @@
 package net.happykoo.vcs.application;
 
 import net.happykoo.vcs.adapter.in.api.dto.CommentRequest;
-import net.happykoo.vcs.application.port.out.LikeCommentPort;
-import net.happykoo.vcs.application.port.out.LoadCommentPort;
-import net.happykoo.vcs.application.port.out.LoadUserPort;
-import net.happykoo.vcs.application.port.out.SaveCommentPort;
+import net.happykoo.vcs.application.port.out.*;
 import net.happykoo.vcs.domain.comment.Comment;
 import net.happykoo.vcs.domain.comment.CommentFixtures;
 import net.happykoo.vcs.domain.user.User;
@@ -20,6 +17,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.LongStream;
 
@@ -35,11 +33,12 @@ public class CommentServiceTest {
     private final LoadCommentPort loadCommentPort = mock(LoadCommentPort.class);
     private final SaveCommentPort saveCommentPort = mock(SaveCommentPort.class);
     private final LikeCommentPort likeCommentPort = mock(LikeCommentPort.class);
+    private final BlockCommentPort blockCommentPort = mock(BlockCommentPort.class);
     private final LoadUserPort loadUserPort = mock(LoadUserPort.class);
 
     @BeforeEach
     void setUp() {
-        commentService = new CommentService(loadCommentPort, saveCommentPort, likeCommentPort, loadUserPort);
+        commentService = new CommentService(loadCommentPort, saveCommentPort, likeCommentPort, blockCommentPort, loadUserPort);
     }
 
     @Test
@@ -188,7 +187,7 @@ public class CommentServiceTest {
     @DisplayName("댓글 목록")
     class ListComment {
         @Test
-        @DisplayName("User 없는 댓글 목록")
+        @DisplayName("댓글 목록 :: 차단한 댓글이 없는 경우")
         void test1() {
             var videoId = "videoId";
             var userId = "happykoo";
@@ -220,42 +219,41 @@ public class CommentServiceTest {
             verify(likeCommentPort, times(5)).getCommentLikeCount(any());
         }
 
-//TODO: blocking
-//        @Test
-//        @DisplayName("User 있는 댓글 목록")
-//        void test2() {
-//            var videoId = "videoId";
-//            var userId = "happykoo";
-//            var user = UserFixtures.stub();
-//            var comments = LongStream.range(1, 6)
-//                    .mapToObj(l -> Comment.builder()
-//                            .id(UUID.randomUUID().toString())
-//                            .videoId(videoId)
-//                            .text("text " + l)
-//                            .authorId("user")
-//                            .publishedAt(LocalDateTime.now())
-//                            .build()
-//                    )
-//                    .toList();
-//            var blockedComments = Set.of(comments.get(0).getId());
-//            var author = User.builder()
-//                    .id(userId)
-//                    .name("해피쿠")
-//                    .profileImageUrl("https://happykoo.net/profile.jpg")
-//                    .build();
-//            given(commentPort.listComment(any(), any(), any(), any())).willReturn(comments);
-//            given(commentBlockPort.getUserCommentBlocks(any())).willReturn(blockedComments);
-//            given(loadUserPort.loadUser(any())).willReturn(Optional.of(author));
-//            given(commentLikePort.getCommentLikeCount(any())).willReturn(20L);
-//
-//            var result = sut.listComments(user, videoId, "time", LocalDateTime.now().toString(), 5);
-//
-//            // Then
-//            then(result)
-//                    .hasSize(4);
-//            verify(loadUserPort, times(4)).loadUser(any());
-//            verify(commentLikePort, times(4)).getCommentLikeCount(any());
-//        }
+        @Test
+        @DisplayName("댓글 목록 :: 차단한 댓글이 있는 경우")
+        void test2() {
+            var videoId = "videoId";
+            var userId = "happykoo";
+            var user = UserFixtures.stub();
+            var comments = LongStream.range(1, 6)
+                    .mapToObj(l -> Comment.builder()
+                            .id(UUID.randomUUID().toString())
+                            .videoId(videoId)
+                            .text("text " + l)
+                            .authorId("user")
+                            .publishedAt(LocalDateTime.now())
+                            .build()
+                    )
+                    .toList();
+            var blockedComments = Set.of(comments.get(0).getId());
+            var author = User.builder()
+                    .id(userId)
+                    .name("해피쿠")
+                    .profileImageUrl("https://happykoo.net/profile.jpg")
+                    .build();
+            given(loadCommentPort.listComment(any(), any(), any(), any())).willReturn(comments);
+            given(blockCommentPort.getUserCommentBlocks(any())).willReturn(blockedComments);
+            given(loadUserPort.loadUser(any())).willReturn(Optional.of(author));
+            given(likeCommentPort.getCommentLikeCount(any())).willReturn(20L);
+
+            var result = commentService.listComments(user, videoId, "time", LocalDateTime.now().toString(), 5);
+
+            // Then
+            then(result)
+                    .hasSize(4);
+            verify(loadUserPort, times(4)).loadUser(any());
+            verify(likeCommentPort, times(4)).getCommentLikeCount(any());
+        }
     }
 
     @Nested

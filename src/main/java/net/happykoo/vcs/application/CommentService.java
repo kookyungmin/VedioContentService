@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.happykoo.vcs.adapter.in.api.dto.CommentRequest;
 import net.happykoo.vcs.adapter.in.api.dto.CommentResponse;
 import net.happykoo.vcs.application.port.in.CommentUseCase;
-import net.happykoo.vcs.application.port.out.LikeCommentPort;
-import net.happykoo.vcs.application.port.out.LoadCommentPort;
-import net.happykoo.vcs.application.port.out.LoadUserPort;
-import net.happykoo.vcs.application.port.out.SaveCommentPort;
+import net.happykoo.vcs.application.port.out.*;
 import net.happykoo.vcs.domain.comment.Comment;
 import net.happykoo.vcs.domain.user.User;
 import net.happykoo.vcs.exception.BadRequestException;
@@ -26,6 +23,7 @@ public class CommentService implements CommentUseCase {
     private final LoadCommentPort loadCommentPort;
     private final SaveCommentPort saveCommentPort;
     private final LikeCommentPort likeCommentPort;
+    private final BlockCommentPort blockCommentPort;
     private final LoadUserPort loadUserPort;
 
     @Override
@@ -81,9 +79,10 @@ public class CommentService implements CommentUseCase {
 
     @Override
     public List<CommentResponse> listComments(User user, String videoId, String order, String offset, Integer maxSize) {
-        //TODO: comment block 로직 구현
+        var commentBlocks = blockCommentPort.getUserCommentBlocks(user.getId());
         var list = loadCommentPort.listComment(videoId, order, offset, maxSize)
                 .stream()
+                .filter(comment -> !commentBlocks.contains(comment.getId()))
                 .map(this::buildComment)
                 .map(commentRes -> {
                     commentRes.addReplies(listReplies(commentRes.id(), offset, maxSize));

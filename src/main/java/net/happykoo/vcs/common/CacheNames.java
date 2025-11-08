@@ -21,6 +21,7 @@ public class CacheNames {
 
     public static final String USER = "user";
     public static final String USER_SESSION = "user-session";
+    public static final String USER_COMMENT_BLOCK = USER + SEPARATOR + "comment-block";
 
     public static final String SUBSCRIBE = "subscribe";
     public static final String SUBSCRIBE_CHANNEL_BY_USER = SUBSCRIBE + SEPARATOR + "channel-by-user";

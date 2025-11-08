@@ -31,6 +31,10 @@ public class RedisKeyGenerator {
         return COMMENT_LIKE + SEPARATOR + commentId;
     }
 
+    public static String getUserCommentBlock(String userId) {
+        return USER_COMMENT_BLOCK + SEPARATOR + userId;
+    }
+
     public static String getPinnedCommentKey(String videoId) {
         return COMMENT_PINNED + SEPARATOR + videoId;
     }
