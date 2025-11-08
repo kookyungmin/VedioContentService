@@ -20,10 +20,8 @@ public class ChannelPersistenceAdapter implements SaveChannelPort, LoadChannelPo
 
     @Override
     public void saveChannel(Channel channel) {
-        //Redis 에 데이터 먼저 지우고, 캐싱 -> 데이터 저장
-        channelRedisRepository.deleteById(channel.getId());
+        //write-through 방식 redis update, jpa update
         channelRedisRepository.save(ChannelRedisHash.from(channel));
-
         channelJpaRepository.save(ChannelJpaEntity.from(channel));
     }
 

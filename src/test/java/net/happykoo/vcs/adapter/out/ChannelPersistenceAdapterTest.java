@@ -42,8 +42,6 @@ class ChannelPersistenceAdapterTest {
             channelPersistenceAdapter.saveChannel(channel);
 
             //then
-            verify(channelRedisRepository).deleteById(channelId);
-
             var jpaCaptor = ArgumentCaptor.forClass(ChannelJpaEntity.class);
             verify(channelJpaRepository).save(jpaCaptor.capture());
             then(jpaCaptor.getValue())
